@@ -30,6 +30,8 @@ terraform plan
 
 terraform apply
 
+terraform force-unlock 1da70c01-855b-9879-628d-97afec50e862 // se der pau no meio.
+
 terraform plan -destroy
 terraform destroy
 
