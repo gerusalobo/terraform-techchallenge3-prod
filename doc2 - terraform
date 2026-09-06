@@ -1,0 +1,406 @@
+aws configure list --profile lab
+ver o que tem no lab
+
+configura as credenciais no lab
+aws configure --profile lab
+aws configure --profile prod
+
+muda pára o lab
+aws sts get-caller-identity --profile lab
+
+muda para prod
+aws sts get-caller-identity --profile prod
+
+export AWS_PROFILE=lab
+export AWS_PROFILE=prod
+
+aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name togglemaster-eks \
+  --profile prod
+
+kubectl get nodes
+
+ativa o terraform
+terraform init
+
+terraform fmt
+terraform validate
+terraform plan
+
+terraform apply
+
+terraform plan -destroy
+terraform destroy
+
+terraform show
+terraform state list
+
+
+criando o bucket de terraform
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ aws s3api create-bucket \
+  --bucket togglemaster-terraform-state-943048301123 \
+  --region us-east-1 \
+  --profile lab
+{
+    "Location": "/togglemaster-terraform-state-943048301123",
+    "BucketArn": "arn:aws:s3:::togglemaster-terraform-state-943048301123"
+}
+habilitando o versionamento
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ aws s3api put-bucket-versioning \
+  --bucket togglemaster-terraform-state-943048301123 \
+  --versioning-configuration Status=Enabled \
+  --profile lab
+
+verificando
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ aws s3api get-bucket-versioning \
+  --bucket togglemaster-terraform-state-943048301123 \
+  --profile lab
+{
+    "Status": "Enabled"
+}
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ export AWS_PROFILE=lab
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ echo $AWS_PROFILE
+lab
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ aws sts get-caller-identity
+{
+    "UserId": "AROA3NIFUZQLOV6RQYF7C:user4972985=gerusalobo@gmail.com",
+    "Account": "784380251158",
+    "Arn": "arn:aws:sts::784380251158:assumed-role/voclabs/user4972985=gerusalobo@gmail.com"
+}
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform init
+Initializing the backend...
+
+Successfully configured the backend "s3"! Terraform will automatically
+use this backend unless the backend configuration changes.
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Using previously-installed hashicorp/aws v6.62.0
+
+Terraform has been successfully initialized!
+
+depois da criação ou alteração de arquivos:
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform init
+Initializing the backend...
+
+Initializing modules...
+- vpc in modules/vpc
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Using previously-installed hashicorp/aws v6.62.0
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform validate
+Success! The configuration is valid.
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform plan
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # module.vpc.aws_vpc.togglemaster will be created
+  + resource "aws_vpc" "togglemaster" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + region                               = "us-east-1"
+      + tags                                 = {
+          + "Name" = "togglemaster-vpc"
+        }
+      + tags_all                             = {
+          + "Name" = "togglemaster-vpc"
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + vpc_cidr = "10.0.0.0/16"
+  + vpc_id   = (known after apply)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform
+apply" now.
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # module.vpc.aws_vpc.togglemaster will be created
+  + resource "aws_vpc" "togglemaster" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + region                               = "us-east-1"
+      + tags                                 = {
+          + "Name" = "togglemaster-vpc"
+        }
+      + tags_all                             = {
+          + "Name" = "togglemaster-vpc"
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + vpc_cidr = "10.0.0.0/16"
+  + vpc_id   = (known after apply)
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+module.vpc.aws_vpc.togglemaster: Creating...
+module.vpc.aws_vpc.togglemaster: Creation complete after 4s [id=vpc-0f990d45bdc85743a]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+vpc_cidr = "10.0.0.0/16"
+vpc_id = "vpc-0f990d45bdc85743a"
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ aws ec2 describe-vpcs \
+  --filters "Name=tag:Name,Values=togglemaster-vpc" \
+  --profile lab
+{
+    "Vpcs": [
+        {
+            "OwnerId": "784380251158",
+            "InstanceTenancy": "default",
+            "CidrBlockAssociationSet": [
+                {
+                    "AssociationId": "vpc-cidr-assoc-037b8e8424ad25e54",
+                    "CidrBlock": "10.0.0.0/16",
+                    "CidrBlockState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "IsDefault": false,
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "togglemaster-vpc"
+                }
+            ],
+            "BlockPublicAccessStates": {
+                "InternetGatewayBlockMode": "off"
+            },
+            "VpcId": "vpc-0f990d45bdc85743a",
+            "State": "available",
+            "CidrBlock": "10.0.0.0/16",
+            "DhcpOptionsId": "dopt-04c8dde3a2dafa77e"
+        }
+    ]
+:
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform init
+Initializing the backend...
+
+Initializing modules...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Using previously-installed hashicorp/aws v6.62.0
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform fmt -recursive
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform validate
+Success! The configuration is valid.
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ terraform plan
+module.vpc.aws_vpc.togglemaster: Refreshing state... [id=vpc-0f990d45bdc85743a]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated
+with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # module.vpc.aws_subnet.private_a will be created
+  + resource "aws_subnet" "private_a" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.11.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block                                = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + region                                         = "us-east-1"
+      + tags                                           = {
+          + "Name" = "togglemaster-private-subnet-a"
+        }
+      + tags_all                                       = {
+          + "Name" = "togglemaster-private-subnet-a"
+        }
+      + vpc_id                                         = "vpc-0f990d45bdc85743a"
+    }
+
+  # module.vpc.aws_subnet.private_b will be created
+  + resource "aws_subnet" "private_b" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.12.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block                                = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + region                                         = "us-east-1"
+      + tags                                           = {
+          + "Name" = "togglemaster-private-subnet-b"
+        }
+      + tags_all                                       = {
+          + "Name" = "togglemaster-private-subnet-b"
+        }
+      + vpc_id                                         = "vpc-0f990d45bdc85743a"
+    }
+
+  # module.vpc.aws_subnet.public_a will be created
+  + resource "aws_subnet" "public_a" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.1.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block                                = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + region                                         = "us-east-1"
+      + tags                                           = {
+          + "Name" = "togglemaster-public-subnet-a"
+        }
+      + tags_all                                       = {
+          + "Name" = "togglemaster-public-subnet-a"
+        }
+      + vpc_id                                         = "vpc-0f990d45bdc85743a"
+    }
+
+  # module.vpc.aws_subnet.public_b will be created
+  + resource "aws_subnet" "public_b" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.2.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block                                = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + region                                         = "us-east-1"
+      + tags                                           = {
+          + "Name" = "togglemaster-public-subnet-b"
+        }
+      + tags_all                                       = {
+          + "Name" = "togglemaster-public-subnet-b"
+        }
+      + vpc_id                                         = "vpc-0f990d45bdc85743a"
+    }
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + private_subnet_ids = [
+      + (known after apply),
+      + (known after apply),
+    ]
+  + public_subnet_ids  = [
+      + (known after apply),
+      + (known after apply),
+    ]
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these
+actions if you run "terraform apply" now.
+
+terraform plan -destroy
+
+terraform destroy
+
+terraform show
+
+terraform state list
+

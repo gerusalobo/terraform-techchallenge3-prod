@@ -1,0 +1,59 @@
+//Auth
+
+RDS_AUTH_PWD=$(aws secretsmanager get-secret-value \
+  --secret-id tech-challenge/rds-auth \
+  --profile prod \
+  --region us-east-1 \
+  --query SecretString \
+  --output text | jq -r '.password')
+
+  kubectl run postgres-client \
+  --rm -it \
+  --restart=Never \
+  --image=postgres:15-alpine \
+  --env="PGPASSWORD=$RDS_AUTH_PWD" \
+  -- \
+  psql \
+    -h rds-auth.cc7ss20oaani.us-east-1.rds.amazonaws.com \
+    -U auth_user \
+    -d auth_db
+
+
+-------------------------------
+//Flag
+
+//pegar as credenciais na aws
+RDS_FLAG_PWD=$(aws secretsmanager get-secret-value \
+  --secret-id tech-challenge/rds-flag \
+  --profile prod \
+  --region us-east-1 \
+  --query SecretString \
+  --output text | jq -r '.password')
+
+//pod temporario
+kubectl run postgres-client \
+  --rm -it \
+  --restart=Never \
+  --image=postgres:15-alpine \
+  --env="PGPASSWORD=$RDS_FLAG_PWD" \
+  -- \
+  psql \
+    -h rds-flag.cc7ss20oaani.us-east-1.rds.amazonaws.com \
+    -U flag_user \
+    -d postgres
+
+
+-------------------------
+comandos no postgree
+
+CREATE DATABASE targeting_db;
+
+\l pra ver os bancos
+\dt para ver as tabelas
+
+para mudar de banco:
+\c nome_do_banco
+
+para ver as colunas
+\d nome_da_tabela
+
