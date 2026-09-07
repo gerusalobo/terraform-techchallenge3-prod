@@ -40,7 +40,7 @@ echo "=========================================="
 # ==================================================
 
 echo
-echo "[1/9] AWS"
+echo "[1] AWS"
 
 if ACCOUNT_ID=$(aws sts get-caller-identity \
     --profile "$PROFILE" \
@@ -61,7 +61,7 @@ fi
 # ==================================================
 
 echo
-echo "[2/9] VPC"
+echo "[2] VPC"
 
 VPC_ID=$(aws ec2 describe-vpcs \
     --profile "$PROFILE" \
@@ -105,7 +105,7 @@ PRIVATE_SUBNETS=$(aws ec2 describe-subnets \
 # ==================================================
 
 echo
-echo "[3/9] EKS"
+echo "[3] EKS"
 
 EKS_STATUS=$(aws eks describe-cluster \
     --name "$CLUSTER_NAME" \
@@ -140,7 +140,7 @@ fi
 # ==================================================
 
 echo
-echo "[4/9] EKS Add-ons"
+echo "[4] EKS Add-ons"
 
 for addon in vpc-cni kube-proxy coredns; do
 
@@ -165,7 +165,7 @@ done
 # ==================================================
 
 echo
-echo "[5/9] RDS"
+echo "[5] RDS"
 
 RDS_INSTANCES=$(aws rds describe-db-instances \
     --profile "$PROFILE" \
@@ -194,7 +194,7 @@ fi
 # ==================================================
 
 echo
-echo "[6/9] Secrets Manager"
+echo "[6] Secrets Manager"
 
 SECRET_NAMES=$(aws secretsmanager list-secrets \
     --profile "$PROFILE" \
@@ -230,7 +230,7 @@ FLAG_SECRET=$(echo "$SECRET_NAMES" |
 # ==================================================
 
 echo
-echo "[7/9] ElastiCache Redis"
+echo "[7] ElastiCache Redis"
 
 REDIS_COUNT=$(aws elasticache describe-cache-clusters \
     --profile "$PROFILE" \
@@ -249,7 +249,7 @@ fi
 # ==================================================
 
 echo
-echo "[8/9] DynamoDB / SQS"
+echo "[8] DynamoDB / SQS"
 
 TABLE_COUNT=$(aws dynamodb list-tables \
     --profile "$PROFILE" \
@@ -280,7 +280,7 @@ fi
 # ==================================================
 
 echo
-echo "[9/9] ECR"
+echo "[9] ECR"
 
 for repo in \
     auth-service \
@@ -302,6 +302,101 @@ do
     fi
 
 done
+
+# ==================================================
+# 10. NGINX + Argo CD
+# ==================================================
+
+echo
+echo "[10] NGINX / Argo CD"
+
+# --------------------------------------------------
+# NGINX
+# --------------------------------------------------
+
+echo
+echo "      NGINX"
+
+NGINX_STATUS=$(helm list \
+    -n ingress-nginx \
+    -o json 2>/dev/null |
+    jq -r '.[] | select(.name=="ingress-nginx") | .status')
+
+if [ "$NGINX_STATUS" = "deployed" ]; then
+    ok "NGINX Helm release: deployed"
+else
+    fail "NGINX Helm release: $NGINX_STATUS"
+fi
+
+NGINX_READY=$(kubectl get deployment ingress-nginx-controller \
+    -n ingress-nginx \
+    -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo 0)
+
+NGINX_DESIRED=$(kubectl get deployment ingress-nginx-controller \
+    -n ingress-nginx \
+    -o jsonpath='{.spec.replicas}' 2>/dev/null || echo 0)
+
+if [ "$NGINX_READY" = "$NGINX_DESIRED" ] && [ "$NGINX_READY" -gt 0 ] 2>/dev/null; then
+    ok "NGINX controller: $NGINX_READY/$NGINX_DESIRED Ready"
+else
+    fail "NGINX controller: $NGINX_READY/$NGINX_DESIRED Ready"
+fi
+
+NGINX_LB=$(kubectl get svc ingress-nginx-controller \
+    -n ingress-nginx \
+    -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' \
+    2>/dev/null)
+
+if [ -n "$NGINX_LB" ]; then
+    ok "NGINX LoadBalancer: $NGINX_LB"
+else
+    fail "NGINX LoadBalancer"
+fi
+
+# --------------------------------------------------
+# Argo CD
+# --------------------------------------------------
+
+echo
+echo "      Argo CD"
+
+ARGO_STATUS=$(helm list \
+    -n argocd \
+    -o json 2>/dev/null |
+    jq -r '.[] | select(.name=="argo-cd") | .status')
+
+if [ "$ARGO_STATUS" = "deployed" ]; then
+    ok "Argo CD Helm release: deployed"
+else
+    fail "Argo CD Helm release: $ARGO_STATUS"
+fi
+
+ARGO_PODS=$(kubectl get pods \
+    -n argocd \
+    --no-headers 2>/dev/null |
+    wc -l)
+
+ARGO_RUNNING=$(kubectl get pods \
+    -n argocd \
+    --no-headers 2>/dev/null |
+    awk '$3=="Running" {count++} END {print count+0}')
+
+if [ "$ARGO_PODS" -gt 0 ] && [ "$ARGO_RUNNING" -eq "$ARGO_PODS" ]; then
+    ok "Argo CD Pods: $ARGO_RUNNING/$ARGO_PODS Running"
+else
+    fail "Argo CD Pods: $ARGO_RUNNING/$ARGO_PODS Running"
+fi
+
+ARGO_SERVICES=$(kubectl get svc \
+    -n argocd \
+    --no-headers 2>/dev/null |
+    wc -l)
+
+if [ "$ARGO_SERVICES" -gt 0 ]; then
+    ok "Argo CD Services: $ARGO_SERVICES"
+else
+    fail "Argo CD Services"
+fi
 
 # ==================================================
 # RESULTADO

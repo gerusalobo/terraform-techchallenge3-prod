@@ -35,6 +35,15 @@ module "eks" {
   max_size       = 12
 }
 
+#instalação do nginx e argoCD
+module "helm" {
+  source = "./modules/helm"
+
+  depends_on = [
+    module.eks
+  ]
+}
+
 # 3. Banco de Dados (3 RDS PostgreSQL Isolados)
 module "rds" {
   source = "./modules/rds"
