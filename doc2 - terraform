@@ -19,6 +19,11 @@ aws eks update-kubeconfig \
   --name togglemaster-eks \
   --profile prod
 
+aws eks update-kubeconfig \
+  --region us-east-1 \
+  --name togglemaster-eks \
+  --profile lab
+
 kubectl get nodes
 
 ativa o terraform
