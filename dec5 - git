@@ -1,0 +1,48 @@
+cd ~/Documentos/GitHub
+git clone https://github.com/castilhoarth/terraform-techchallenge3.git
+cd terraform-techchallenge3
+git checkout -b feature/ajustes-gerusa
+
+git status
+git branch
+git checkout -b feature/ajustes-gerusa  //branch
+
+git diff --stat
+
+Depois, se quiser conferir detalhadamente:
+
+git diff
+
+Se estiver tudo certo, aí sim:
+
+git add .
+
+Confira o que será enviado:
+
+git status
+
+Você deverá ver os arquivos em "Changes to be committed".
+
+Então faça o commit:
+
+git commit -m "feat: atualiza infraestrutura Terraform e Helm"
+
+E finalmente envie sua branch para o repositório final:
+
+git push -u origin feature/ajustes-gerusa
+
+----
+
+comandos de copiar de uma pasta pra outra:
+cp ~/Documentos/GitHub/terraform-techchallenge3-prod/*.tf .
+cp ~/Documentos/GitHub/terraform-techchallenge3-prod/README.md .
+cp ~/Documentos/GitHub/terraform-techchallenge3-prod/*.sh .
+cp -r ~/Documentos/GitHub/terraform-techchallenge3-prod/modules/* modules/
+
+git status
+git diff --stat
+git diff
+git add .
+git status
+git commit -m "feat: atualiza infraestrutura Terraform e Helm"
+git push -u origin feature/ajustes-gerusa
