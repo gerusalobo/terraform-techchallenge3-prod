@@ -43,6 +43,11 @@ terraform destroy
 terraform show
 terraform state list
 
+para restartar o nginx se não subir direito
+helm upgrade ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx \
+  --reuse-values
 
 criando o bucket de terraform
 gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL/terraform$ aws s3api create-bucket \
