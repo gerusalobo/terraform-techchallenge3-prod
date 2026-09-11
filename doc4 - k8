@@ -1,0 +1,21 @@
+gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ kubectl get jobs -n toggle-prod
+NAME                  STATUS     COMPLETIONS   DURATION   AGE
+auth-db-init          Complete   1/1           8m40s      18m
+flag-db-init          Complete   1/1           8m59s      18m
+targeting-db-create   Complete   1/1           14s        9m14s
+targeting-db-init     Complete   1/1           16s        8m57s
+gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ kubectl get externalsecret -n toggle-prod
+NAME              STORETYPE            STORE                 REFRESH INTERVAL   STATUS         READY   LAST SYNC
+auth-master-key   ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    8m46s
+gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ kubectl get application toggle-prod -n argocd
+NAME          SYNC STATUS   HEALTH STATUS
+toggle-prod   OutOfSync     Degraded
+gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ kubectl get pods -n toggle-prod
+NAME                                  READY   STATUS             RESTARTS        AGE
+auth-db-init-bqg6v                    0/1     Completed          0               17s
+auth-service-8488f95b44-n9w2q         1/1     Running            0               136m
+evaluation-service-64b48948f5-wsmqc   0/1     CrashLoopBackOff   6 (2m48s ago)   9m2s
+flag-db-init-jlg7q                    0/1     Completed          0               17s
+flag-service-57d68f47bf-btsjn         1/1     Running            0               153m
+targeting-db-create-4hjlg             0/1     Completed          0               3s
+targeting-service-86894c7cff-jbljh    1/1     Running            0               153m
