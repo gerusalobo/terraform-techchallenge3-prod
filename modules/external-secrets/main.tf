@@ -49,8 +49,10 @@ resource "aws_iam_policy" "external_secrets" {
       ]
 
       Resource = [
-        "arn:aws:secretsmanager:us-east-1:${data.aws_caller_identity.current.account_id}:secret:tech-challenge/auth-master-key-*"
-      ]
+        "arn:aws:secretsmanager:us-east-1:${data.aws_caller_identity.current.account_id}:secret:tech-challenge/auth-master-key-*",
+        "arn:aws:secretsmanager:us-east-1:${data.aws_caller_identity.current.account_id}:secret:tech-challenge/rds-auth-*",
+        "arn:aws:secretsmanager:us-east-1:${data.aws_caller_identity.current.account_id}:secret:tech-challenge/rds-flag-*"
+    ]
     }]
   })
 }

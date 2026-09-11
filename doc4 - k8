@@ -1,3 +1,10 @@
+kubectl get externalsecret -n toggle-prod
+
+
+
+
+
+
 gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ kubectl get jobs -n toggle-prod
 NAME                  STATUS     COMPLETIONS   DURATION   AGE
 auth-db-init          Complete   1/1           8m40s      18m
@@ -19,3 +26,12 @@ flag-db-init-jlg7q                    0/1     Completed          0              
 flag-service-57d68f47bf-btsjn         1/1     Running            0               153m
 targeting-db-create-4hjlg             0/1     Completed          0               3s
 targeting-service-86894c7cff-jbljh    1/1     Running            0               153m
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL$ kubectl -n argocd annotate application toggle-prod argocd.argoproj.io/refresh=hard --overwrite
+application.argoproj.io/toggle-prod annotated
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL$ kubectl get application toggle-prod -n argocd -o jsonpath='{.status.sync.status}{" | "}{.status.health.status}{"\n"}'
+OutOfSync | Degraded
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL$ kubectl get externalsecret -n toggle-prod
+NAME              STORETYPE            STORE                 REFRESH INTERVAL   STATUS              READY   LAST SYNC
+auth-db           ClusterSecretStore   aws-secrets-manager   1h                 SecretSyncedError   False   
+auth-master-key   ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced        True    58m
