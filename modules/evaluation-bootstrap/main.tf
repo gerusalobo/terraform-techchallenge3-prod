@@ -51,7 +51,7 @@ resource "aws_iam_policy" "evaluation_bootstrap" {
       Resource = [
         "arn:aws:secretsmanager:us-east-1:${data.aws_caller_identity.current.account_id}:secret:tech-challenge/auth-master-key-*"
       ]
-    }, {
+      }, {
       Effect = "Allow"
 
       Action = [

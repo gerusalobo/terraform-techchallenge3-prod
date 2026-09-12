@@ -151,3 +151,33 @@ module "evaluation_bootstrap" {
     module.eks
   ]
 }
+
+module "evaluation_service" {
+  source = "./modules/evaluation-service"
+
+  cluster_name      = var.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.oidc_issuer_url
+  sqs_queue_arn     = module.sqs.queue_arn
+
+  depends_on = [
+    module.eks,
+    module.sqs
+  ]
+}
+
+module "analytics_service" {
+  source = "./modules/analytics-service"
+
+  cluster_name       = var.cluster_name
+  oidc_provider_arn  = module.eks.oidc_provider_arn
+  oidc_issuer_url    = module.eks.oidc_issuer_url
+  sqs_queue_arn      = module.sqs.queue_arn
+  dynamodb_table_arn = module.dynamodb.table_arn
+
+  depends_on = [
+    module.eks,
+    module.sqs,
+    module.dynamodb
+  ]
+}
