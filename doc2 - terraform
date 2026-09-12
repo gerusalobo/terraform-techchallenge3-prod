@@ -43,7 +43,28 @@ terraform destroy
 terraform show
 terraform state list
 
+
+//para conseguir destruir o ingress:
+Primeiro restauramos a customizada:
+
+terraform apply \
+  -target=module.iam.aws_iam_policy.eks_load_balancer \
+  -target=module.iam.aws_iam_role_policy_attachment.eks_load_balancer
+
+Depois restauramos o attachment da policy padrão:
+
+terraform apply \
+  -target=module.iam.aws_iam_role_policy_attachment.eks_cluster_Policy
+
+No final o role ficou com:
+
+togglemaster-eks-load-balancer
+AmazonEKSClusterPolicy
+//
+
+
 para restartar o nginx se não subir direito
+
 helm upgrade ingress-nginx ingress-nginx \
   --repo https://kubernetes.github.io/ingress-nginx \
   --namespace ingress-nginx \

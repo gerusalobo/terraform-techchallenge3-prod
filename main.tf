@@ -30,20 +30,21 @@ module "eks" {
   node_role_arn    = module.iam.eks_node_role_arn
 
   instance_types = ["t3.micro"]
-  desired_size   = 10
-  min_size       = 8
-  max_size       = 12
+  desired_size   = 11
+  min_size       = 9
+  max_size       = 13
 }
 
-#instalação do nginx e argoCD e external accounts
+#instalação do nginx, argoCD, Metricas, Keda e external accounts
 module "helm" {
   source = "./modules/helm"
 
   external_secrets_role_arn = module.external_secrets.role_arn
-
+  keda_role_arn             = module.keda.role_arn
   depends_on = [
     module.eks,
-    module.external_secrets
+    module.external_secrets,
+    module.keda
   ]
 }
 
@@ -179,5 +180,19 @@ module "analytics_service" {
     module.eks,
     module.sqs,
     module.dynamodb
+  ]
+}
+
+module "keda" {
+  source = "./modules/keda"
+
+  cluster_name      = var.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.oidc_issuer_url
+  sqs_queue_arn     = module.sqs.queue_arn
+
+  depends_on = [
+    module.eks,
+    module.sqs
   ]
 }

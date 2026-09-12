@@ -4,13 +4,31 @@ kubectl get ingress -n toggle-prod
 
 kubectl get pods,jobs -n toggle-prod
 
+kubectl get svc ingress-nginx-controller -n ingress-nginx
+
 kubectl get svc -n ingress-nginx
 
 kubectl get applications -n argocd
 
+kubectl describe application toggle-prod -n argocd
+
 kubectl get application toggle-prod -n argocd -o jsonpath='{.status.sync.status}{"\n"}{.status.health.status}{"\n"}'
 
 kubectl apply --dry-run=server -f arquivo.yaml
+
+kubectl get applications -n argocd
+
+kubectl get pods -n toggle-prod
+
+kubectl get externalsecrets -n toggle-prod
+
+kubectl get jobs -n toggle-prod
+
+kubectl get pods -A
+
+ kubectl logs deployment/analytics-service -n toggle-prod
+
+ kubectl logs deployment/evaluation-service -n toggle-prod
 
 //argo preso no pre-sync
 restart do serviço
@@ -62,3 +80,100 @@ gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL$ kubectl get externalse
 NAME              STORETYPE            STORE                 REFRESH INTERVAL   STATUS              READY   LAST SYNC
 auth-db           ClusterSecretStore   aws-secrets-manager   1h                 SecretSyncedError   False   
 auth-master-key   ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced        True    58m
+
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL$ kubectl get pods -n toggle-prod
+NAME                                  READY   STATUS      RESTARTS   AGE
+analytics-service-7ccc4d45c5-ppjtt    1/1     Running     0          6m10s
+auth-db-init-tkkq9                    0/1     Completed   0          5h53m
+auth-service-694fd7d8f9-7h8bp         1/1     Running     0          5h52m
+evaluation-api-key-bootstrap-l826v    0/1     Completed   0          111m
+evaluation-service-5ff9f77dcc-5mg57   1/1     Running     0          83m
+flag-db-init-97b79                    0/1     Completed   0          5h53m
+flag-service-57d68f47bf-7xfgj         1/1     Running     0          5h52m
+targeting-db-create-55knf             0/1     Completed   0          5h53m
+targeting-db-init-f55cg               0/1     Completed   0          5h53m
+targeting-service-86894c7cff-tztk5    1/1     Running     0          5h52m
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL$ kubectl get applications -n argocd
+kubectl get pods -n toggle-prod -o wide
+kubectl get externalsecrets -n toggle-prod
+kubectl get jobs -n toggle-prod
+NAME          SYNC STATUS   HEALTH STATUS
+toggle-prod   OutOfSync     Degraded
+NAME                                  READY   STATUS      RESTARTS   AGE     IP           NODE                         NOMINATED NODE   READINESS GATES
+analytics-service-7ccc4d45c5-ppjtt    1/1     Running     0          12m     10.0.1.183   ip-10-0-1-167.ec2.internal   <none>           <none>
+auth-db-init-tkkq9                    0/1     Completed   0          5h59m   10.0.2.222   ip-10-0-2-232.ec2.internal   <none>           <none>
+auth-service-694fd7d8f9-7h8bp         1/1     Running     0          5h58m   10.0.2.222   ip-10-0-2-232.ec2.internal   <none>           <none>
+evaluation-api-key-bootstrap-l826v    0/1     Completed   0          117m    10.0.2.141   ip-10-0-2-39.ec2.internal    <none>           <none>
+evaluation-service-5ff9f77dcc-5mg57   1/1     Running     0          89m     10.0.1.244   ip-10-0-1-44.ec2.internal    <none>           <none>
+flag-db-init-97b79                    0/1     Completed   0          5h59m   10.0.1.140   ip-10-0-1-172.ec2.internal   <none>           <none>
+flag-service-57d68f47bf-7xfgj         1/1     Running     0          5h58m   10.0.2.206   ip-10-0-2-187.ec2.internal   <none>           <none>
+targeting-db-create-55knf             0/1     Completed   0          5h59m   10.0.2.206   ip-10-0-2-187.ec2.internal   <none>           <none>
+targeting-db-init-f55cg               0/1     Completed   0          5h59m   10.0.2.222   ip-10-0-2-232.ec2.internal   <none>           <none>
+targeting-service-86894c7cff-tztk5    1/1     Running     0          5h58m   10.0.1.140   ip-10-0-1-172.ec2.internal   <none>           <none>
+NAME                        STORETYPE            STORE                 REFRESH INTERVAL   STATUS         READY   LAST SYNC
+analytics-runtime-config    ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    29m
+auth-db                     ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    59m
+auth-master-key             ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    59m
+evaluation-runtime-config   ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    57m
+evaluation-secret           ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    57m
+flag-db                     ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    59m
+targeting-db                ClusterSecretStore   aws-secrets-manager   1h                 SecretSynced   True    59m
+NAME                           STATUS     COMPLETIONS   DURATION   AGE
+auth-db-init                   Complete   1/1           11s        5h59m
+evaluation-api-key-bootstrap   Complete   1/1           10s        117m
+flag-db-init                   Complete   1/1           11s        5h59m
+targeting-db-create            Complete   1/1           11s        5h59m
+targeting-db-init              Complete   1/1           43s        5h59m
+gerusa@Orion:~/Documentos/GitHub/toggle-master-devops-GL$ kubectl get pods -A
+NAMESPACE          NAME                                                        READY   STATUS      RESTARTS      AGE
+argocd             argo-cd-argocd-application-controller-0                     1/1     Running     0             6h
+argocd             argo-cd-argocd-applicationset-controller-5f48fc8d7d-w49tk   1/1     Running     0             6h
+argocd             argo-cd-argocd-dex-server-778db59b9c-jszxs                  1/1     Running     0             6h
+argocd             argo-cd-argocd-notifications-controller-689f7d6bb6-x5ldx    1/1     Running     0             6h
+argocd             argo-cd-argocd-redis-8546d59c45-tv9c8                       1/1     Running     0             6h
+argocd             argo-cd-argocd-repo-server-77f6876999-2q44b                 1/1     Running     0             6h
+argocd             argo-cd-argocd-server-57789bc997-ndpw8                      1/1     Running     0             78m
+external-secrets   external-secrets-7f77458895-rpn5n                           1/1     Running     0             6h2m
+external-secrets   external-secrets-cert-controller-b88bd7b49-8gcxv            1/1     Running     0             6h2m
+external-secrets   external-secrets-webhook-7477bbb46f-6n5p5                   1/1     Running     0             6h2m
+ingress-nginx      ingress-nginx-controller-5cd9869bf8-q9h9g                   1/1     Running     0             6h2m
+keda               keda-admission-webhooks-58876db69c-svvg7                    1/1     Running     0             34m
+keda               keda-operator-db67b55f6-tkhml                               1/1     Running     1 (34m ago)   34m
+keda               keda-operator-metrics-apiserver-d75fdf797-lxrtd             1/1     Running     0             34m
+kube-system        aws-node-7rc7f                                              2/2     Running     0             6h4m
+kube-system        aws-node-8fm4x                                              2/2     Running     0             6h4m
+kube-system        aws-node-bnlwc                                              2/2     Running     0             95m
+kube-system        aws-node-gn2dj                                              2/2     Running     0             6h4m
+kube-system        aws-node-lnvrl                                              2/2     Running     0             6h4m
+kube-system        aws-node-mb2vv                                              2/2     Running     0             6h4m
+kube-system        aws-node-mks2t                                              2/2     Running     0             34m
+kube-system        aws-node-pz2np                                              2/2     Running     0             33m
+kube-system        aws-node-sh58r                                              2/2     Running     0             6h4m
+kube-system        aws-node-sp4sm                                              2/2     Running     0             11m
+kube-system        aws-node-v2xb7                                              2/2     Running     0             6h4m
+kube-system        aws-node-znnwf                                              2/2     Running     0             6h4m
+kube-system        cluster-autoscaler-589664bb8b-xl5t5                         1/1     Running     0             78m
+kube-system        coredns-c7fcc45d5-jk4d7                                     1/1     Running     0             4h33m
+kube-system        coredns-c7fcc45d5-ptg27                                     1/1     Running     0             4h33m
+kube-system        kube-proxy-4ck7c                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-5w2ph                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-655hl                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-8h97r                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-bsrnk                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-j7tnz                                            1/1     Running     0             11m
+kube-system        kube-proxy-lsjrj                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-nt9hn                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-pfwnb                                            1/1     Running     0             34m
+kube-system        kube-proxy-qrklb                                            1/1     Running     0             6h4m
+kube-system        kube-proxy-rrspf                                            1/1     Running     0             33m
+kube-system        kube-proxy-wxsqz                                            1/1     Running     0             95m
+toggle-prod        analytics-service-7ccc4d45c5-ppjtt                          1/1     Running     0             12m
+toggle-prod        auth-db-init-tkkq9                                          0/1     Completed   0             5h59m
+toggle-prod        auth-service-694fd7d8f9-7h8bp                               1/1     Running     0             5h58m
+toggle-prod        evaluation-api-key-bootstrap-l826v                          0/1     Completed   0             118m
+toggle-prod        evaluation-service-5ff9f77dcc-5mg57                         1/1     Running     0             89m
+toggle-prod        flag-db-init-97b79                                          0/1     Completed   0             5h59m
+toggle-prod        flag-service-57d68f47bf-7xfgj                               1/1     Running     0             5h58m
+toggle-prod        targeting-db-create-55knf                                   0/1     Completed   0             5h59m
+toggle-prod        targeting-db-init-f55cg                                     0/1     Completed   0             5h59m
+toggle-prod        targeting-service-86894c7cff-tztk5                          1/1     Running     0             5h58m
