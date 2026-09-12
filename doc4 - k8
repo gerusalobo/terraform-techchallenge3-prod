@@ -1,9 +1,17 @@
 kubectl get externalsecret -n toggle-prod
 
+kubectl get ingress -n toggle-prod
 
+kubectl get svc -n ingress-nginx
 
+restart do serviço
+kubectl rollout restart statefulset argo-cd-argocd-application-controller -n argocd
+statefulset.apps/argo-cd-argocd-application-controller restarted
 
-
+Primeiro force o Argo a buscar a nova revisão do Git:
+kubectl -n argocd annotate application toggle-prod \
+  argocd.argoproj.io/refresh=hard \
+  --overwrite
 
 gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ kubectl get jobs -n toggle-prod
 NAME                  STATUS     COMPLETIONS   DURATION   AGE
