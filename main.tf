@@ -126,3 +126,13 @@ module "external_secrets" {
 
   depends_on = [module.eks]
 }
+
+module "cluster_autoscaler" {
+  source = "./modules/cluster-autoscaler"
+
+  cluster_name      = var.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.oidc_issuer_url
+
+  depends_on = [module.eks]
+}

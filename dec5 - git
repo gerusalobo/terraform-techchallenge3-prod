@@ -46,3 +46,29 @@ git add .
 git status
 git commit -m "feat: atualiza infraestrutura Terraform e Helm"
 git push -u origin feature/ajustes-gerusa
+
+
+
+gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ cd ..
+gerusa@Orion:~/Documentos/GitHub$ cd ~/Documentos/GitHub
+
+git clone https://github.com/castilhoarth/tech-challenge-3-k8s.git tech-challenge-3-k8s
+
+cd tech-challenge-3-k8s
+Cloning into 'tech-challenge-3-k8s'...
+remote: Enumerating objects: 101, done.
+remote: Counting objects: 100% (101/101), done.
+remote: Compressing objects: 100% (63/63), done.
+remote: Total 101 (delta 48), reused 84 (delta 31), pack-reused 0 (from 0)
+Receiving objects: 100% (101/101), 31.57 KiB | 15.78 MiB/s, done.
+Resolving deltas: 100% (48/48), done.
+gerusa@Orion:~/Documentos/GitHub/tech-challenge-3-k8s$ git branch --show-current
+main
+gerusa@Orion:~/Documentos/GitHub/tech-challenge-3-k8s$ git status
+git remote -v
+No ramo main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+origin  https://github.com/castilhoarth/tech-challenge-3-k8s.git (fetch)
+origin  https://github.com/castilhoarth/tech-challenge-3-k8s.git (push)
