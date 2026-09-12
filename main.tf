@@ -75,6 +75,9 @@ module "rds" {
 
 module "secrets" {
   source = "./modules/secrets"
+
+  redis_endpoint = module.elasticache.redis_endpoint
+  sqs_queue_url  = module.sqs.queue_url
 }
 
 # 5 . Cache (Elasticache Redis - Evaluation Service) 
@@ -141,8 +144,8 @@ module "evaluation_bootstrap" {
   source = "./modules/evaluation-bootstrap"
 
   cluster_name      = var.cluster_name
-  oidc_provider_arn  = module.eks.oidc_provider_arn
-  oidc_issuer_url    = module.eks.oidc_issuer_url
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.oidc_issuer_url
 
   depends_on = [
     module.eks
