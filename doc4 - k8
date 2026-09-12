@@ -4,6 +4,9 @@ kubectl get ingress -n toggle-prod
 
 kubectl get svc -n ingress-nginx
 
+
+
+//argo preso no pre-sync
 restart do serviço
 kubectl rollout restart statefulset argo-cd-argocd-application-controller -n argocd
 statefulset.apps/argo-cd-argocd-application-controller restarted
@@ -12,6 +15,16 @@ Primeiro force o Argo a buscar a nova revisão do Git:
 kubectl -n argocd annotate application toggle-prod \
   argocd.argoproj.io/refresh=hard \
   --overwrite
+
+//load balancer ficou preso na deleção
+aws elb describe-load-balancers \
+  --region us-east-1 \
+  --query 'LoadBalancerDescriptions[?LoadBalancerName==`a80b773d74c0244d09c3ad14c2c79fd8`]' \
+  --output json
+
+aws elb delete-load-balancer \
+  --region us-east-1 \
+  --load-balancer-name a80b773d74c0244d09c3ad14c2c79fd8
 
 gerusa@Orion:~/Documentos/GitHub/terraform-techchallenge3-prod$ kubectl get jobs -n toggle-prod
 NAME                  STATUS     COMPLETIONS   DURATION   AGE
