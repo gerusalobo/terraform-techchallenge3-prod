@@ -2,9 +2,15 @@ kubectl get externalsecret -n toggle-prod
 
 kubectl get ingress -n toggle-prod
 
+kubectl get pods,jobs -n toggle-prod
+
 kubectl get svc -n ingress-nginx
 
+kubectl get applications -n argocd
 
+kubectl get application toggle-prod -n argocd -o jsonpath='{.status.sync.status}{"\n"}{.status.health.status}{"\n"}'
+
+kubectl apply --dry-run=server -f arquivo.yaml
 
 //argo preso no pre-sync
 restart do serviço
