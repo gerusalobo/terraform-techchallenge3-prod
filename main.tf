@@ -32,7 +32,9 @@ module "eks" {
   instance_types = ["t3.micro"]
   desired_size   = 11
   min_size       = 9
-  max_size       = 13
+  max_size       = 15
+
+  depends_on = [module.iam]
 }
 
 #instalação do nginx, argoCD, Metricas, Keda e external accounts
@@ -48,7 +50,7 @@ module "helm" {
   ]
 }
 
-# 3. Banco de Dados (3 RDS PostgreSQL Isolados)
+#3. Banco de Dados (3 RDS PostgreSQL Isolados)
 module "rds" {
   source = "./modules/rds"
 
